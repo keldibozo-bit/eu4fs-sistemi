@@ -1,0 +1,270 @@
+// Skema e bazës së të dhënave - EU4Food Safety, Sistemi i Menaxhimit të Projektit
+//
+// SHËNIM PËR PRODHIM (PRODUCTION): provider-i "sqlite" më poshtë funksionon
+// vetëm për zhvillim lokal. Vercel përdor një filesystem të përkohshëm
+// (ephemeral), kështu që databaza SQLite (dev.db) FSHIHET në çdo deploy të ri
+// dhe NUK duhet përdorur në prodhim. Para se ta vendosësh (deploy) në Vercel,
+// ndrysho `provider = "postgresql"` më poshtë dhe vendos DATABASE_URL si
+// connection string të një databaze Postgres (p.sh. Vercel Postgres ose Neon).
+// Shiko README.md për hapat e plotë të deployment-it.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ------------------------------------------------------------------
+// PËRDORUES (ekipi i PM-ve që kyçen në sistem)
+// ------------------------------------------------------------------
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("PM")
+  createdAt    DateTime @default(now())
+}
+
+// ------------------------------------------------------------------
+// KONFIGURIMI I PROJEKTIT (singleton, por e modeluar si tabelë)
+// ------------------------------------------------------------------
+model Project {
+  id            String    @id @default(cuid())
+  name          String    @default("EU4Food Safety — Sistemi i Menaxhimit")
+  funder        String    @default("EU4Food Safety / GIZ")
+  torReference  String    @default("7000016213")
+  startDate     DateTime?
+  endDate       DateTime?
+  pmName        String    @default("Keldi Bozo")
+}
+
+// ------------------------------------------------------------------
+// LOTET
+// ------------------------------------------------------------------
+model Lot {
+  id               String   @id @default(cuid())
+  code             String   @unique
+  name             String
+  focus            String
+  budgetDaysExpert Int
+  budgetEUR        Float?
+  maxExperts       Int?
+  pmResponsible    String
+
+  experts        Expert[]
+  deliverables   Deliverable[]
+  catalogItems   DeliverableCatalogItem[]
+  issues         IssueLog[]
+}
+
+enum ExpertRole {
+  LIGJOR
+  TEKNIK
+  LIGJOR_TEKNIK
+}
+
+enum ExpertStatus {
+  AKTIV
+  PERFUNDUAR
+  PEZULLUAR
+  NUK_KA_FILLUAR
+}
+
+// ------------------------------------------------------------------
+// ROSTER EKSPERTËSH
+// ------------------------------------------------------------------
+model Expert {
+  id             String       @id @default(cuid())
+  name           String
+  role           ExpertRole
+  lotId          String
+  lot            Lot          @relation(fields: [lotId], references: [id])
+  expertiseArea  String
+  contractedDays Float
+  dailyRateEUR   Float?
+  startDate      DateTime
+  endDate        DateTime?
+  email          String
+  phone          String?
+  status         ExpertStatus @default(AKTIV)
+  pmNotes        String?
+
+  deliverables Deliverable[]
+  timesheets   Timesheet[]
+}
+
+// ------------------------------------------------------------------
+// RACI & ROLET
+// ------------------------------------------------------------------
+model RaciEntry {
+  id           String @id @default(cuid())
+  activity     String
+  responsible  String
+  accountable  String
+  consulted    String
+  informed     String
+}
+
+enum QcType {
+  LIGJOR
+  TEKNIK
+}
+
+// ------------------------------------------------------------------
+// RUBRIKA QC (tabelë reference)
+// ------------------------------------------------------------------
+model QcCriterion {
+  id            String @id @default(cuid())
+  type          QcType
+  code          String
+  title         String
+  description   String
+  weightPercent Int
+}
+
+// ------------------------------------------------------------------
+// KATALOGU I DELIVERABLES (lista kontraktuale)
+// ------------------------------------------------------------------
+model DeliverableCatalogItem {
+  id                 String    @id @default(cuid())
+  contractualId      String    @unique
+  lotId              String
+  lot                Lot       @relation(fields: [lotId], references: [id])
+  title              String
+  reference          String
+  indicativeDeadline DateTime?
+  plannedExperts     String?
+  notes              String?
+
+  deliverables Deliverable[]
+}
+
+enum DeliverableType {
+  LIGJOR
+  TEKNIK
+}
+
+// Vlerat e enum-it janë pa shenja diakritike për arsye përputhshmërie me
+// motorin e databazës; etiketat në shqip me shenja diakritike (Dorëzuar,
+// Në Rishikim, Kërkon Ndryshime) përcaktohen në lib/labels.ts për shfaqje.
+enum DeliverableStatus {
+  DRAFT
+  DOREZUAR
+  NE_RISHIKIM
+  KERKON_NDRYSHIME
+  APROVUAR
+}
+
+enum ConfirmimEnum {
+  PO
+  JO
+  NA
+}
+
+// ------------------------------------------------------------------
+// DELIVERABLES & QC (tabela kryesore)
+// ------------------------------------------------------------------
+model Deliverable {
+  id              String             @id @default(cuid())
+  catalogItemId   String?
+  catalogItem     DeliverableCatalogItem? @relation(fields: [catalogItemId], references: [id])
+  lotId           String
+  lot             Lot                @relation(fields: [lotId], references: [id])
+  expertId        String
+  expert          Expert             @relation(fields: [expertId], references: [id])
+  title           String
+  type            DeliverableType
+  deadline        DateTime?
+  submissionDate  DateTime?
+  status          DeliverableStatus  @default(DRAFT)
+
+  k1 Int?
+  k2 Int?
+  k3 Int?
+  k4 Int?
+  k5 Int?
+  k6 Int?
+
+  reviewer        String?
+  qcComments      String?
+  version         Int      @default(1)
+  finalApprovalDate DateTime?
+
+  secondaryReviewer         String?
+  secondaryReviewConfirmed  ConfirmimEnum?
+
+  versions   VersionHistory[]
+  timesheets Timesheet[]
+}
+
+// ------------------------------------------------------------------
+// HISTORIKU I VERSIONEVE
+// ------------------------------------------------------------------
+model VersionHistory {
+  id                       String      @id @default(cuid())
+  deliverableId            String
+  deliverable              Deliverable @relation(fields: [deliverableId], references: [id], onDelete: Cascade)
+  version                  Int
+  date                     DateTime
+  changesRequestedOrMade   String
+  by                       String
+  statusOfThisVersion      String
+}
+
+// ------------------------------------------------------------------
+// FLETË KOHE (TIMESHEETS)
+// ------------------------------------------------------------------
+model Timesheet {
+  id                  String       @id @default(cuid())
+  date                DateTime
+  expertId            String
+  expert              Expert       @relation(fields: [expertId], references: [id])
+  daysWorked          Float
+  activityDescription String
+  linkedDeliverableId String?
+  linkedDeliverable   Deliverable? @relation(fields: [linkedDeliverableId], references: [id])
+  submittedBy         String?
+  registeredAt        DateTime     @default(now())
+  notes               String?
+}
+
+enum IssueType {
+  PROBLEMATIKE
+  REREZIK
+  VARESI
+  BASHKEPUNIM
+}
+
+enum ImpactLevel {
+  I_LARTE
+  MESATAR
+  I_ULET
+}
+
+enum IssueStatus {
+  HAPUR
+  NE_PROCES
+  MBYLLUR
+}
+
+// ------------------------------------------------------------------
+// LOG PROBLEMATIKASH / RAID LOG
+// ------------------------------------------------------------------
+model IssueLog {
+  id                       String      @id @default(cuid())
+  date                     DateTime
+  type                     IssueType
+  lotId                    String
+  lot                      Lot         @relation(fields: [lotId], references: [id])
+  expertsInvolved          String
+  description              String
+  impact                   ImpactLevel
+  status                   IssueStatus @default(HAPUR)
+  responsibleForResolution String?
+  resolutionDate           DateTime?
+  notesResult              String?
+}
