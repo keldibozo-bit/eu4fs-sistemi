@@ -10,6 +10,7 @@ import {
   intVal,
   dateOrNull,
 } from "@/lib/formHelpers";
+import { DeliverableType, DeliverableStatus, ConfirmimEnum } from "@prisma/client";
 
 function readDeliverable(fd: FormData) {
   return {
@@ -17,10 +18,10 @@ function readDeliverable(fd: FormData) {
     lotId: str(fd, "lotId"),
     expertId: str(fd, "expertId"),
     title: str(fd, "title"),
-    type: str(fd, "type"),
+    type: str(fd, "type") as DeliverableType,
     deadline: dateOrNull(fd, "deadline"),
     submissionDate: dateOrNull(fd, "submissionDate"),
-    status: str(fd, "status"),
+    status: str(fd, "status") as DeliverableStatus,
     k1: intOrNull(fd, "k1"),
     k2: intOrNull(fd, "k2"),
     k3: intOrNull(fd, "k3"),
@@ -32,7 +33,7 @@ function readDeliverable(fd: FormData) {
     version: intVal(fd, "version") || 1,
     finalApprovalDate: dateOrNull(fd, "finalApprovalDate"),
     secondaryReviewer: strOrNull(fd, "secondaryReviewer"),
-    secondaryReviewConfirmed: strOrNull(fd, "secondaryReviewConfirmed"),
+    secondaryReviewConfirmed: strOrNull(fd, "secondaryReviewConfirmed") as ConfirmimEnum | null,
   };
 }
 
