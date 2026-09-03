@@ -4,11 +4,12 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { str, strOrNull, dateVal, dateOrNull } from "@/lib/formHelpers";
+import { IssueType } from "@prisma/client";
 
 function readIssue(fd: FormData) {
   return {
     date: dateVal(fd, "date"),
-    type: str(fd, "type"),
+    type: str(fd, "type") as IssueType,
     lotId: str(fd, "lotId"),
     expertsInvolved: str(fd, "expertsInvolved"),
     description: str(fd, "description"),
