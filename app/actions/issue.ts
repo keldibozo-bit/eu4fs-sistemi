@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { str, strOrNull, dateVal, dateOrNull } from "@/lib/formHelpers";
-import { IssueType } from "@prisma/client";
+import { IssueType, ImpactLevel, IssueStatus } from "@prisma/client";
 
 function readIssue(fd: FormData) {
   return {
@@ -13,8 +13,8 @@ function readIssue(fd: FormData) {
     lotId: str(fd, "lotId"),
     expertsInvolved: str(fd, "expertsInvolved"),
     description: str(fd, "description"),
-    impact: str(fd, "impact"),
-    status: str(fd, "status"),
+    impact: str(fd, "impact") as ImpactLevel,
+    status: str(fd, "status") as IssueStatus,
     responsibleForResolution: strOrNull(fd, "responsibleForResolution"),
     resolutionDate: dateOrNull(fd, "resolutionDate"),
     notesResult: strOrNull(fd, "notesResult"),
