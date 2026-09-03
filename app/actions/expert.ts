@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { str, strOrNull, floatVal, floatOrNull, dateVal, dateOrNull } from "@/lib/formHelpers";
-import { ExpertRole } from "@prisma/client";
+import { ExpertRole, ExpertStatus } from "@prisma/client";
 
 function readExpert(fd: FormData) {
   return {
@@ -18,7 +18,7 @@ function readExpert(fd: FormData) {
     endDate: dateOrNull(fd, "endDate"),
     email: str(fd, "email"),
     phone: strOrNull(fd, "phone"),
-    status: str(fd, "status"),
+    status: str(fd, "status") as ExpertStatus,
     pmNotes: strOrNull(fd, "pmNotes"),
   };
 }
