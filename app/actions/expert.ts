@@ -4,11 +4,12 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { str, strOrNull, floatVal, floatOrNull, dateVal, dateOrNull } from "@/lib/formHelpers";
+import { ExpertRole } from "@prisma/client";
 
 function readExpert(fd: FormData) {
   return {
     name: str(fd, "name"),
-    role: str(fd, "role"),
+    role: str(fd, "role") as ExpertRole,
     lotId: str(fd, "lotId"),
     expertiseArea: str(fd, "expertiseArea"),
     contractedDays: floatVal(fd, "contractedDays"),
