@@ -137,3 +137,31 @@ export type Project = {
   endDate: Date | null;
   pmName: string;
 };
+
+export type Cluster = {
+    id: string;
+    lotId: string;
+    lot?: Lot;
+    name: string;
+    workPlan: string | null;
+    order: number;
+};
+
+export type Act = {
+    id: string;
+    clusterId: string;
+    cluster?: Cluster;
+    euReference: string;
+    albanianAct: string;
+    status: string;
+    deadline: Date | null;
+    notes: string | null;
+};
+
+export type ClusterExpert = {
+    id: string;
+    clusterId: string;
+    cluster?: Cluster;
+    expertId: string;
+    expert?: Expert;
+};
