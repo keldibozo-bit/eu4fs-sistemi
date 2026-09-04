@@ -59,6 +59,7 @@ model Lot {
   deliverables   Deliverable[]
   catalogItems   DeliverableCatalogItem[]
   issues         IssueLog[]
+  clusters       Cluster[]
 }
 
 enum ExpertRole {
@@ -93,8 +94,58 @@ model Expert {
   status         ExpertStatus @default(AKTIV)
   pmNotes        String?
 
-  deliverables Deliverable[]
-  timesheets   Timesheet[]
+  deliverables       Deliverable[]
+  timesheets         Timesheet[]
+  clusterAssignments ClusterExpert[]
+}
+
+// ------------------------------------------------------------------
+// CLUSTERS (grupe direktivash/aktesh për t'u përafruar, brenda një LOT-i)
+// ------------------------------------------------------------------
+model Cluster {
+  id       String  @id @default(cuid())
+  lotId    String
+  lot      Lot     @relation(fields: [lotId], references: [id], onDelete: Cascade)
+  name     String
+  workPlan String?
+  order    Int     @default(0)
+
+  acts           Act[]
+  clusterExperts ClusterExpert[]
+}
+
+enum TranspositionStatus {
+  NUK_KA_FILLUAR
+  NE_PROCES
+  PERAFRUAR
+  MIRATUAR
+}
+
+// ------------------------------------------------------------------
+// AKTET (direktiva/rregullore BE + akti përkatës shqiptar), brenda cluster-it
+// ------------------------------------------------------------------
+model Act {
+  id          String              @id @default(cuid())
+  clusterId   String
+  cluster     Cluster             @relation(fields: [clusterId], references: [id], onDelete: Cascade)
+  euReference String
+  albanianAct String
+  status      TranspositionStatus @default(NUK_KA_FILLUAR)
+  deadline    DateTime?
+  notes       String?
+}
+
+// ------------------------------------------------------------------
+// CAKTIMI I EKSPERTËVE NË CLUSTER (many-to-many Expert <-> Cluster)
+// ------------------------------------------------------------------
+model ClusterExpert {
+  id        String  @id @default(cuid())
+  clusterId String
+  cluster   Cluster @relation(fields: [clusterId], references: [id], onDelete: Cascade)
+  expertId  String
+  expert    Expert  @relation(fields: [expertId], references: [id], onDelete: Cascade)
+
+  @@unique([clusterId, expertId])
 }
 
 // ------------------------------------------------------------------
