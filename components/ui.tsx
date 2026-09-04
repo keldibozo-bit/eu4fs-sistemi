@@ -11,9 +11,12 @@ export function PageHeader({
 }) {
   return (
     <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
-      <div>
-        <h1 className="text-xl font-semibold text-slate-900">{title}</h1>
-        {subtitle && <p className="text-sm text-slate-500 mt-1">{subtitle}</p>}
+      <div className="flex items-start gap-3">
+        <div className="w-1 self-stretch rounded-full bg-indigo-500/80 mt-1" />
+        <div>
+          <h1 className="text-xl font-semibold text-slate-900">{title}</h1>
+          {subtitle && <p className="text-sm text-slate-500 mt-1">{subtitle}</p>}
+        </div>
       </div>
       {action}
     </div>
@@ -29,7 +32,7 @@ export function Card({
 }) {
   return (
     <div
-      className={`bg-white rounded-lg border border-slate-200 shadow-sm ${className}`}
+      className={`bg-white/90 rounded-xl border border-slate-200/80 shadow-md shadow-slate-200/60 ${className}`}
     >
       {children}
     </div>
@@ -49,7 +52,7 @@ export function LinkButton({
     "inline-flex items-center rounded px-3 py-2 text-sm font-medium transition-colors";
   const styles =
     variant === "primary"
-      ? "bg-slate-900 text-white hover:bg-slate-800"
+      ? "bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm shadow-indigo-600/30"
       : "bg-white text-slate-700 border border-slate-300 hover:bg-slate-50";
   return (
     <Link href={href} className={`${base} ${styles}`}>
@@ -87,7 +90,7 @@ export function ProgressBar({ percent }: { percent: number }) {
     percent > 1 ? "bg-red-500" : percent >= 0.8 ? "bg-yellow-500" : "bg-green-500";
   const width = Math.min(percent, 1) * 100;
   return (
-    <div className="w-28 h-2 rounded-full bg-slate-200 overflow-hidden">
+    <div className="w-28 h-2 rounded-full bg-slate-100 overflow-hidden">
       <div className={`h-full ${color}`} style={{ width: `${width}%` }} />
     </div>
   );
