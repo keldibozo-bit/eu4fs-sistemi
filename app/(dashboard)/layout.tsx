@@ -23,7 +23,7 @@ export default async function DashboardLayout({
   return (
     <div className="flex min-h-screen">
       <Sidebar userName={session.user?.name} userEmail={session.user?.email} lots={lots} />
-      <main className="flex-1 min-w-0 p-6 md:p-8">
+      <main className="flex-1 min-w-0 p-4 pt-20 md:p-8">
         <div className="mx-auto max-w-6xl">{children}</div>
       </main>
     </div>
