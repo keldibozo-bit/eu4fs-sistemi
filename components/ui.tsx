@@ -12,7 +12,7 @@ export function PageHeader({
   return (
     <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
       <div className="flex items-start gap-3">
-        <div className="w-1 self-stretch rounded-full bg-indigo-500/80 mt-1" />
+        <div className="w-1.5 self-stretch rounded-full bg-gradient-to-b from-indigo-500 to-sky-400 mt-1" />
         <div>
           <h1 className="text-xl font-semibold text-slate-900">{title}</h1>
           {subtitle && <p className="text-sm text-slate-500 mt-1">{subtitle}</p>}
@@ -32,7 +32,7 @@ export function Card({
 }) {
   return (
     <div
-      className={`bg-white/90 rounded-xl border border-slate-200/80 shadow-md shadow-slate-200/60 ${className}`}
+      className={`bg-white/95 rounded-xl border border-slate-200/80 border-t-4 border-t-indigo-500 shadow-lg shadow-slate-300/40 ${className}`}
     >
       {children}
     </div>
