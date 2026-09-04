@@ -14,8 +14,13 @@
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(1100px circle at 12% -8%, rgba(79, 70, 229, 0.07), transparent 55%),
+    radial-gradient(900px circle at 100% 0%, rgba(79, 70, 229, 0.05), transparent 50%),
+    linear-gradient(180deg, #eef1f6 0%, #f4f6fa 40%, #f8fafc 100%);
+  background-attachment: fixed;
   color: var(--foreground);
+  min-height: 100vh;
 }
 
 table {
