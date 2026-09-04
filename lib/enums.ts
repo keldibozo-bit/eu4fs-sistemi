@@ -90,3 +90,17 @@ export const ISSUE_STATUS_LABELS: Record<IssueStatusVal, string> = {
   NE_PROCES: "Në Proces",
   MBYLLUR: "Mbyllur",
 };
+
+export const TRANSPOSITION_STATUSES = [
+    "NUK_KA_FILLUAR",
+    "NE_PROCES",
+    "PERAFRUAR",
+    "MIRATUAR",
+  ] as const;
+export type TranspositionStatusVal = (typeof TRANSPOSITION_STATUSES)[number];
+export const TRANSPOSITION_STATUS_LABELS: Record<TranspositionStatusVal, string> = {
+    NUK_KA_FILLUAR: "Nuk ka Filluar",
+    NE_PROCES: "Në Proces",
+    PERAFRUAR: "Përafruar",
+    MIRATUAR: "Miratuar",
+};
