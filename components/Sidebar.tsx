@@ -10,6 +10,7 @@ const NAV_TOP = [{ href: "/", label: "Përmbledhja" }];
 const NAV_BOTTOM = [
   { href: "/ekspertet", label: "Ekspertët" },
   { href: "/akte", label: "Lista e Akteve (të gjitha)" },
+  { href: "/dokumente", label: "Dokumentet" },
   { href: "/raci", label: "RACI & Rolet" },
   { href: "/ore-pune", label: "Fletë Kohe" },
   { href: "/deliverables", label: "Deliverables & QC" },
