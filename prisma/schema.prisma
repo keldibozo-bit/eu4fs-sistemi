@@ -76,7 +76,7 @@ enum ExpertStatus {
 }
 
 // ------------------------------------------------------------------
-// ROSTER EKSPERTËSH
+// ROSTER EKSPERTËS 
 // ------------------------------------------------------------------
 model Expert {
   id             String       @id @default(cuid())
@@ -97,6 +97,7 @@ model Expert {
   deliverables       Deliverable[]
   timesheets         Timesheet[]
   clusterAssignments ClusterExpert[]
+  documents          Document[]
 }
 
 // ------------------------------------------------------------------
@@ -133,6 +134,8 @@ model Act {
   status      TranspositionStatus @default(NUK_KA_FILLUAR)
   deadline    DateTime?
   notes       String?
+
+  documents Document[]
 }
 
 // ------------------------------------------------------------------
@@ -146,6 +149,41 @@ model ClusterExpert {
   expert    Expert  @relation(fields: [expertId], references: [id], onDelete: Cascade)
 
   @@unique([clusterId, expertId])
+}
+
+enum DocumentCategory {
+  AKT_LIGJOR
+  KONTRATE
+  CV
+  TJETER
+}
+
+// ------------------------------------------------------------------
+// DOKUMENTET (sistemi i menaxhimit të dokumenteve — DMS)
+// Çdo dokument mund të lidhet opsionalisht me një Akt ose një Ekspert;
+// mund të ekzistojë edhe pa lidhje, si pjesë e bibliotekës qendrore.
+// ------------------------------------------------------------------
+model Document {
+  id          String           @id @default(cuid())
+  title       String
+  description String?
+  category    DocumentCategory @default(TJETER)
+  fileUrl     String
+  fileName    String
+  fileType    String?
+  fileSize    Int?
+  version     String?
+  uploadedBy  String?
+  createdAt   DateTime         @default(now())
+
+  actId    String?
+  act      Act?    @relation(fields: [actId], references: [id], onDelete: SetNull)
+  expertId String?
+  expert   Expert? @relation(fields: [expertId], references: [id], onDelete: SetNull)
+
+  @@index([category])
+  @@index([actId])
+  @@index([expertId])
 }
 
 // ------------------------------------------------------------------
@@ -162,7 +200,7 @@ model RaciEntry {
 
 enum QcType {
   LIGJOR
-  TEKNIK
+  TEKNIK,
 }
 
 // ------------------------------------------------------------------
@@ -196,11 +234,11 @@ model DeliverableCatalogItem {
 
 enum DeliverableType {
   LIGJOR
-  TEKNIK
+  TEKNIK,
 }
 
 // Vlerat e enum-it janë pa shenja diakritike për arsye përputhshmërie me
-// motorin e databazës; etiketat në shqip me shenja diakritike (Dorëzuar,
+// motorin e databazés; etiketat në shqip me shenja diakritike (Dorëzuar,
 // Në Rishikim, Kërkon Ndryshime) përcaktohen në lib/labels.ts për shfaqje.
 enum DeliverableStatus {
   DRAFT
