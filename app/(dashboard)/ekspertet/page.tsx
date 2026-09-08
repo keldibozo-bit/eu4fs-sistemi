@@ -6,6 +6,7 @@ import { EXPERT_STATUS_BADGE_LABELS } from "@/lib/compute";
 import { buildExpertOverview } from "@/lib/aggregate";
 import { deleteExpert } from "@/app/actions/expert";
 import DeleteSubmitButton from "@/components/DeleteSubmitButton";
+import { TableSearch, ExportCsvButton, PrintButton } from "@/components/TableTools";
 import Link from "next/link";
 import type { Expert, Lot, Deliverable, Timesheet, IssueLog } from "@/lib/types";
 
@@ -42,7 +43,12 @@ export default async function EkspertetPage() {
       <PageHeader
         title="Ekspertët"
         subtitle="Roster-i i ekspertëve dhe pasqyra e përdorimit, sipas lotit"
-        action={<LinkButton href="/ekspertet/new">+ Ekspert i Ri</LinkButton>}
+        action={
+          <div className="flex items-center gap-2">
+            <PrintButton />
+            <LinkButton href="/ekspertet/new">+ Ekspert i Ri</LinkButton>
+          </div>
+        }
       />
 
       {lots.length === 0 ? (
@@ -53,6 +59,8 @@ export default async function EkspertetPage() {
         lots.map((lot) => {
           const lotExperts = expertsByLot.get(lot.id) ?? [];
           const lotOverview = overviewByLot.get(lot.id) ?? [];
+          const rosterId = `roster-${lot.id}`;
+          const overviewId = `overview-${lot.id}`;
           return (
             <section key={lot.id} className="mb-10">
               <h2 className="text-lg font-semibold text-slate-900">
@@ -64,11 +72,18 @@ export default async function EkspertetPage() {
                   : `${lotExperts.length} ekspertë`}
               </p>
 
+              {lotExperts.length > 0 && (
+                <div className="flex items-center justify-between gap-3 mb-3 flex-wrap print:hidden">
+                  <TableSearch targetId={rosterId} placeholder="Kërko ekspert, rol, fushë..." />
+                  <ExportCsvButton targetId={rosterId} filename={`ekspertet-${lot.code}`} />
+                </div>
+              )}
+
               <Card className="overflow-x-auto mb-4">
                 {lotExperts.length === 0 ? (
                   <EmptyState text="Nuk ka ekspertë të regjistruar për këtë lot ende." />
                 ) : (
-                  <table className="w-full min-w-[1000px]">
+                  <table id={rosterId} className="w-full min-w-[1000px]">
                     <thead>
                       <tr>
                         <Th>Emri</Th>
@@ -96,7 +111,7 @@ export default async function EkspertetPage() {
                           <Td>{e.email}</Td>
                           <Td>{EXPERT_STATUS_LABELS[e.status as ExpertStatus] ?? e.status}</Td>
                           <Td>
-                            <div className="flex items-center gap-3">
+                            <div className="flex-items-center gap-3">
                               <Link href={`/ekspertet/${e.id}/edit`} className="text-slate-700 hover:underline text-sm">
                                 Ndrysho
                               </Link>
@@ -113,8 +128,12 @@ export default async function EkspertetPage() {
               </Card>
 
               {lotOverview.length > 0 && (
-                <Card className="overflow-x-auto">
-                  <table className="w-full min-w-[1100px]">
+                <>
+                  <div className="flex justify-end mb-2 print:hidden">
+                    <ExportCsvButton targetId={overviewId} filename={`pasqyra-ekspertesh-${lot.code}`} />
+                  </div>
+                  <Card className="overflow-x-auto">
+                  <table id={overviewId} className="w-full min-w-[1100px]">
                     <thead>
                       <tr>
                         <Th>Emri</Th>
@@ -157,7 +176,8 @@ export default async function EkspertetPage() {
                       ))}
                     </tbody>
                   </table>
-                </Card>
+                  </Card>
+                </>
               )}
             </section>
           );
