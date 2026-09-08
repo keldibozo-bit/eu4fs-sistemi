@@ -104,3 +104,12 @@ export const TRANSPOSITION_STATUS_LABELS: Record<TranspositionStatusVal, string>
     PERAFRUAR: "Përafruar",
     MIRATUAR: "Miratuar",
 };
+
+export const DOCUMENT_CATEGORIES = ["AKT_LIGJOR", "KONTRATE", "CV", "TJETER"] as const;
+export type DocumentCategoryVal = (typeof DOCUMENT_CATEGORIES)[number];
+export const DOCUMENT_CATEGORY_LABELS: Record<DocumentCategoryVal, string> = {
+  AKT_LIGJOR: "Akt Ligjor / Direktivë",
+  KONTRATE: "Kontratë",
+  CV: "CV",
+  TJETER: "Tjetër",
+};
