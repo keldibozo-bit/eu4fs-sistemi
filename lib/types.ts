@@ -165,3 +165,21 @@ export type ClusterExpert = {
     expertId: string;
     expert?: Expert;
 };
+
+export type Document = {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  fileUrl: string;
+  fileName: string;
+  fileType: string | null;
+  fileSize: number | null;
+  version: string | null;
+  uploadedBy: string | null;
+  createdAt: Date;
+  actId: string | null;
+  act?: Act | null;
+  expertId: string | null;
+  expert?: Expert | null;
+};
