@@ -9,6 +9,7 @@ const NAV_TOP = [{ href: "/", label: "Përmbledhja" }];
 
 const NAV_BOTTOM = [
   { href: "/ekspertet", label: "Ekspertët" },
+  { href: "/akte", label: "Lista e Akteve (të gjitha)" },
   { href: "/raci", label: "RACI & Rolet" },
   { href: "/ore-pune", label: "Fletë Kohe" },
   { href: "/deliverables", label: "Deliverables & QC" },
@@ -154,7 +155,7 @@ export default function Sidebar({
 
   return (
     <>
-      <div className="md:hidden fixed top-0 inset-x-0 z-30 flex items-center justify-between bg-slate-900 text-slate-100 px-4 py-3 border-b border-slate-800">
+      <div className="md:hidden fixed top-0 inset-x-0 z-30 flex items-center justify-between bg-slate-900 text-slate-100 px-4 py-3 border-b border-slate-800 print:hidden">
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
@@ -172,7 +173,7 @@ export default function Sidebar({
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 shrink-0 bg-slate-900 text-slate-100 flex flex-col h-full transform transition-transform duration-200 ease-in-out md:static md:translate-x-0 md:transform-none ${
+        className={`print:hidden fixed inset-y-0 left-0 z-50 w-64 shrink-0 bg-slate-900 text-slate-100 flex flex-col h-full transform transition-transform duration-200 ease-in-out md:static md:translate-x-0 md:transform-none ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
