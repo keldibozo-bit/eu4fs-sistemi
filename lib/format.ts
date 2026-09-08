@@ -33,3 +33,10 @@ export function fmtPercent(n: number | null | undefined): string {
   if (n == null) return "—";
   return Math.round(n * 100) + "%";
 }
+
+export function fmtFileSize(bytes: number | null | undefined): string {
+  if (bytes == null) return "—";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
