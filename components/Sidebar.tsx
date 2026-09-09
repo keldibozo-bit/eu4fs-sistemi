@@ -17,6 +17,7 @@ const NAV_BOTTOM = [
   { href: "/katalogu", label: "Katalogu i Deliverables" },
   { href: "/rubrika-qc", label: "Rubrika QC" },
   { href: "/problematika", label: "Log Problematikash" },
+  { href: "/profili", label: "Profili Im" },
 ];
 
 type LotWithClusters = Lot & { clusters: Cluster[] };
@@ -143,10 +144,12 @@ function LotNav({
 export default function Sidebar({
   userName,
   userEmail,
+  userRole,
   lots,
 }: {
   userName?: string | null;
   userEmail?: string | null;
+  userRole?: string | null;
   lots: LotWithClusters[];
 }) {
   const [lotetOpen, setLotetOpen] = useState(true);
@@ -234,6 +237,16 @@ export default function Sidebar({
                 <NavLink href={item.href} label={item.label} onNavigate={closeMobile} />
               </li>
             ))}
+
+            {userRole === "ADMIN" && (
+              <li>
+                <NavLink
+                  href="/admin/perdoruesit"
+                  label="Përdoruesit (Admin)"
+                  onNavigate={closeMobile}
+                />
+              </li>
+            )}
           </ul>
         </nav>
         <div className="px-4 py-4 border-t border-slate-800 text-xs">

@@ -113,3 +113,10 @@ export const DOCUMENT_CATEGORY_LABELS: Record<DocumentCategoryVal, string> = {
   CV: "CV",
   TJETER: "Tjetër",
 };
+
+export const USER_ROLES = ["PM", "ADMIN"] as const;
+export type UserRoleVal = (typeof USER_ROLES)[number];
+export const USER_ROLE_LABELS: Record<UserRoleVal, string> = {
+  PM: "PM",
+  ADMIN: "Admin",
+};
