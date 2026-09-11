@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { PageHeader, Card, EmptyState } from "@/components/ui";
 import { EXPERT_ROLE_LABELS, type ExpertRole } from "@/lib/enums";
 import { setClusterExperts } from "@/app/actions/clusterExpert";
+import { groupExpertsByPool } from "@/lib/pools";
 import type { Cluster, Expert } from "@/lib/types";
 
 export default async function ClusterExpertsPage({
@@ -20,6 +21,7 @@ export default async function ClusterExpertsPage({
   ]);
 
   const assignedIds = new Set(assignments.map((a) => a.expertId));
+  const groups = groupExpertsByPool(lotExperts);
 
   return (
     <div>
@@ -31,22 +33,34 @@ export default async function ClusterExpertsPage({
         {lotExperts.length === 0 ? (
           <EmptyState text="Nuk ka ekspertë të regjistruar për këtë lot ende." />
         ) : (
-          <form action={setClusterExperts.bind(null, clusterId, id)} className="space-y-4">
-            <div className="space-y-2 max-h-[28rem] overflow-y-auto border border-slate-200 rounded p-3">
-              {lotExperts.map((e) => (
-                <label key={e.id} className="flex items-center gap-3 py-1.5 text-sm">
-                  <input
-                    type="checkbox"
-                    name="expertIds"
-                    value={e.id}
-                    defaultChecked={assignedIds.has(e.id)}
-                    className="rounded border-slate-300"
-                  />
-                  <span className="font-medium text-slate-900">{e.name}</span>
-                  <span className="text-slate-500">
-                    {EXPERT_ROLE_LABELS[e.role as ExpertRole] ?? e.role} — {e.expertiseArea}
-                  </span>
-                </label>
+          <form action={setClusterExperts.bind(null, clusterId, id)} className="space-y-6">
+            <div className="space-y-5 max-h-[32rem] overflow-y-auto pr-1">
+              {groups.map(({ group, experts }) => (
+                <div key={group ? group.number : "pa-pool"}>
+                  <div className="flex items-baseline justify-between mb-2 px-1">
+                    <h3 className="text-sm font-semibold text-slate-800">
+                      {group ? `Pool ${group.number} — ${group.label}` : "Të tjerë (pa pool të përcaktuar)"}
+                    </h3>
+                    <span className="text-xs text-slate-400 shrink-0 pl-2">{experts.length} ekspertë</span>
+                  </div>
+                  <div className="space-y-2 border border-slate-200 rounded p-3">
+                    {experts.map((e) => (
+                      <label key={e.id} className="flex items-center gap-3 py-1.5 text-sm">
+                        <input
+                          type="checkbox"
+                          name="expertIds"
+                          value={e.id}
+                          defaultChecked={assignedIds.has(e.id)}
+                          className="rounded border-slate-300"
+                        />
+                        <span className="font-medium text-slate-900">{e.name}</span>
+                        <span className="text-slate-500">
+                          {EXPERT_ROLE_LABELS[e.role as ExpertRole] ?? e.role} — {e.expertiseArea}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
             <div className="pt-2">
